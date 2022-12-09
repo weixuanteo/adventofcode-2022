@@ -42,4 +42,47 @@ def part1():
 
     print(len(visible) + rows * 2 + cols * 2 - 4)
 
+def part2():
+    map = []
+    with open("input.txt") as f:
+        for line in f:
+            map.append([ int(n) for n in line.strip()])
+
+    rows, cols = len(map), len(map[0])
+
+    max_score = 0
+    for r in range(rows):
+        for c in range(cols):
+            up, down, left, right = 0, 0, 0, 0
+            prev = map[r][c]
+
+            # search top to bottom (down)
+            for i in range(r + 1, rows):
+                down += 1
+                if map[i][c] >= prev:
+                    break
+            
+            # search bottom to top (up)
+            for i in range(r - 1, -1, -1):
+                up += 1
+                if map[i][c] >= prev:
+                    break
+            
+            # search left to right (right)
+            for i in range(c + 1, cols):
+                right += 1
+                if map[r][i] >= prev:
+                    break
+            
+            # search right to left (left)
+            for i in range(c - 1, -1, -1):
+                left += 1
+                if map[r][i] >= prev:
+                    break
+
+            max_score = max(max_score, up * down * left * right)
+
+    print(max_score)
+
 part1()
+part2()
