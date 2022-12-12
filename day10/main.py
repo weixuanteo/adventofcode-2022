@@ -44,24 +44,22 @@ def part2():
     cycle, x = 0, 1
     i = 0
     pos = 1
-    while i < len(instructions):
-        inst = instructions[i][0]
-        cycle += 1
-        
+
+    def check_cycle(pos, cycle):
         if (cycle-1) % 40 in [pos - 1, pos, pos + 1]:
             crt[(cycle-1) // 40][(cycle-1) % 40] = "#"
         else:
             crt[(cycle-1) // 40][(cycle-1) % 40] = " "
 
+    while i < len(instructions):
+        inst = instructions[i][0]
+        cycle += 1
+        check_cycle(pos, cycle)
         if inst == "noop":
             i += 1
             continue
-
         cycle += 1 # 2nd cycle of addx
-        if (cycle-1) % 40 in [pos % 40 - 1, pos % 40, pos % 40 + 1]:
-            crt[(cycle-1) // 40][(cycle-1) % 40] = "#"
-        else:
-            crt[(cycle-1) // 40][(cycle-1) % 40] = " "
+        check_cycle(pos, cycle)
         x += int(instructions[i][1])
 
         pos = x
