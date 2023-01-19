@@ -22,8 +22,8 @@ def construct_env(min_w, max_w, h):
 
 def print_env(env, min_w, max_w):
     widths = [str(i) for i in range(min_w, max_w + 1)]
-    for i in range(3):
-        print(' ' + ''.join([w[i] for w in widths]))
+    for i in range(len(str(max_w))):
+        print(' ' + ''.join([w[i] if i < len(w) else ' ' for w in widths]))
     for i, row in enumerate(env):
         print(str(i) + ''.join(row))
 
@@ -138,6 +138,34 @@ def part1():
             print("{} units of sand came to rest".format(i - 1))
             break
         i += 1
-            
 
+def part2():
+    input = 'input.txt'
+    values = get_min_max_width_height(input)
+    env = construct_env(0, values[1] * 2, values[0] + 2)
+    # print("Initial before adding rocks")
+    # print_env(env, 0, values[1] * 2)
+
+    # add layer of floor
+    for i in range(len(env[-1])):
+        env[-1][i] = '#'
+    
+    construct_rocks(env, input, 0)
+
+    # print("After adding rocks")
+    # print_env(env, 0, values[1] * 2)
+    
+    i = 1
+    while True:
+        sand = Sand(env, 0)
+        sand.drop()
+        if sand.current_pos == [500, 0]:
+            print("Final state")
+            print("===========")
+            # print_env(env, 0, values[1] * 2)
+            # print("Abyss reached at sand {}".format(i))
+            print("{} units of sand came to rest".format(i))
+            break
+        i += 1
 part1()
+part2()
