@@ -41,8 +41,48 @@ def part1():
 
     print("No of positions that cannot contain a beacon:", get_positions_by_y(y))
 
+def part2():
+    input = 'input.txt'
+    y = 4000000
+    sensors, beacons = extract_points(input)
+
+    distances = []
+    for i in range(len(sensors)):
+        distances.append(get_distance(sensors[i][0], sensors[i][1], beacons[i][0], beacons[i][1]))
+
+    # Solution taken from https://www.reddit.com/r/adventofcode/comments/zmcn64/comment/j0b90nr/?utm_source=reddit&utm_medium=web2x&context=3
+    # the intersection points will be the missing scanner location
+    # ( (b-a)/2 , (a+b)/2 )
+
+    a_coeff, b_coeff = [], []
+    # Gradient 1 line
+    # y = x + sy-sx+r+1
+    # y = x + sy-sx-r-1
+    # Gradient -1 line
+    # y = -x + sx+sy+r+1
+    # y = -x + sx+sy-r-1
+    for i in range(len(sensors)):
+        x1, y1 = sensors[i][0], sensors[i][1]
+        r = distances[i]
+        a_coeff.append(y1-x1+r+1)
+        a_coeff.append(y1-x1-r-1)
+        b_coeff.append(x1+y1+r+1)
+        b_coeff.append(x1+y1-r-1)
+
+    for a in a_coeff:
+        for b in b_coeff:
+            intersect = ((b-a)//2, (a+b)//2)
+            if all(0 < p < y for p in intersect) and all(get_distance(intersect[0], intersect[1], sensors[i][0], sensors[i][1]) > distances[i] for i in range(len(sensors))):
+                print("Intersection:", intersect)
+                print("Tuning Frequency:", y * intersect[0] + intersect[1])
+                break
+
 # compute time to run 
 import time
 start_time = time.time()
 part1()
+print("--- %s seconds ---" % (time.time() - start_time))
+
+start_time = time.time()
+part2()
 print("--- %s seconds ---" % (time.time() - start_time))
