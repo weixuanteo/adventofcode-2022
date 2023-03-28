@@ -1,6 +1,5 @@
 import re
 import heapq
-import copy
 from collections import deque, defaultdict
 
 def parse_input(input):
@@ -53,4 +52,40 @@ def part1():
 
     print("(Part 1) Max pressure found:", max_pressure)
 
+def part2():
+    data = parse_input("input.txt")
+    valves = {}
+    for d in data:
+        valves[d[0]] = {"connections": d[2], "flow_rate": d[1]}
+    distances = get_distances(valves)
+
+    max_pressure_paths = defaultdict(int)
+    q = deque([("AA", 26, 0, set())])
+    while q:
+        valve, time_left, total_relief, open_valves = q.popleft()
+        fixed_open_valves = frozenset(open_valves)
+        max_pressure_paths[fixed_open_valves] = max(max_pressure_paths[fixed_open_valves], total_relief)
+        for next_valve in valves.keys():
+            if next_valve not in open_valves and valves[next_valve]["flow_rate"] > 0:
+                time = time_left - distances[(valve, next_valve)] - 1
+                if time < 1:
+                    continue
+                open_valves.add(next_valve)
+                q.append((next_valve, time, total_relief + valves[next_valve]["flow_rate"] * time, open_valves.copy()))
+                open_valves.remove(next_valve)
+
+    max_pressure = 0
+    max_pressure_paths = [(v, k) for k, v in max_pressure_paths.items()]
+    max_pressure_paths.sort(reverse=True)
+    for i, (pressure, paths) in enumerate(max_pressure_paths, start=1):
+        for comp_pressure, comp_path in max_pressure_paths[i:]:
+            if comp_pressure + pressure <= max_pressure:
+                break
+            if paths.isdisjoint(comp_path):
+                max_pressure = max(max_pressure, comp_pressure + pressure)
+                break
+
+    print("(Part 2) Max pressure found:", max_pressure)
+
 part1()
+part2()
