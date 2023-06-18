@@ -63,6 +63,41 @@ func part1(inputFile string) {
 func part2(inputFile string) {
 	fmt.Println("Part 2...")
 
+	rucksacks := parseInput(inputFile)
+	total := 0
+	commonSet := make(map[rune]struct{})
+
+	i := 0
+	for _, rs := range rucksacks {
+		if i == 0 {
+			for _, l := range rs {
+				commonSet[l] = struct{}{}
+			}
+		} else {
+			tempSet := make(map[rune]struct{})
+			for _, l := range rs {
+				if _, ok := commonSet[l]; ok {
+					tempSet[l] = struct{}{}
+				}
+			}
+			commonSet = tempSet
+		}
+		i += 1
+		if i == 3 {
+			for k := range commonSet {
+				if int(k) > 90 {
+					total += int(k) - 97 + 1
+				} else {
+					total += int(k) - 65 + 27
+				}
+			}
+			commonSet = make(map[rune]struct{})
+			i = 0
+		}
+	}
+
+	fmt.Printf("The sum of the priorities of those item types: %v\n", total)
+
 }
 
 func main() {
